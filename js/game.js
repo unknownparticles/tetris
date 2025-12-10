@@ -663,10 +663,10 @@
         let touchStartTime = 0;
         let isSwiping = false;
 
-        const SWIPE_THRESHOLD = 30;  // 滑动距离阈值
-        const TAP_THRESHOLD = 10;    // 点击距离阈值
-        const TAP_TIME_THRESHOLD = 200; // 点击时间阈值 (ms)
-        const MOVE_STEP_THRESHOLD = 40; // 连续移动的步进距离
+        const SWIPE_THRESHOLD = 20;  // 滑动距离阈值（降低使操作更灵敏）
+        const TAP_THRESHOLD = 15;    // 点击距离阈值（稍微放宽容错）
+        const TAP_TIME_THRESHOLD = 250; // 点击时间阈值 (ms)
+        const MOVE_STEP_THRESHOLD = 25; // 连续移动的步进距离（更灵敏）
 
         let lastMoveX = 0; // 用于连续水平移动
 

@@ -1,5 +1,5 @@
 /* ========================================
-   alun的方块 - 样式表
+   alun的方块 - 样式表 (移动端优化版)
    ======================================== */
 
 /* CSS Variables */
@@ -23,9 +23,17 @@
     --font-digital: 'Orbitron', sans-serif;
     --font-main: 'Noto Sans SC', sans-serif;
 
-    --cell-size: 25px;
-    --cell-size-sm: 30px;
+    /* 动态格子大小 - 默认移动端 */
+    --cell-size: min(7vw, 25px);
     --board-gap: 1px;
+    --board-padding: 6px;
+}
+
+/* 桌面端格子大小 */
+@media (min-width: 640px) {
+    :root {
+        --cell-size: 28px;
+    }
 }
 
 /* Reset & Base */
@@ -35,11 +43,9 @@
     box-sizing: border-box;
 }
 
-html,
-body {
+html {
     height: 100%;
-    overflow: hidden;
-    touch-action: none;
+    height: -webkit-fill-available;
 }
 
 body {
@@ -47,23 +53,42 @@ body {
     background: radial-gradient(ellipse at top, var(--color-bg-light), var(--color-bg), var(--color-bg-dark));
     color: var(--color-text);
     min-height: 100vh;
+    min-height: -webkit-fill-available;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Container */
+#game-container {
+    padding: 0.5rem;
+    width: 100%;
+    height: 100%;
+    max-width: 900px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Container */
-#game-container {
-    padding: 1rem;
-    width: 100%;
-    max-width: 900px;
+@media (min-width: 640px) {
+    #game-container {
+        padding: 1rem;
+    }
 }
 
 #layout {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.75rem;
+    width: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
 }
 
 @media (min-width: 640px) {
@@ -71,20 +96,31 @@ body {
         flex-direction: row;
         align-items: flex-start;
         justify-content: center;
+        gap: 1.5rem;
     }
 }
 
-/* Left Column */
+/* ========================================
+   移动端布局：标题+分数 | 游戏板 | 下一个+控制
+   ======================================== */
+
+/* Left Column - 移动端显示在顶部 */
 #left-column {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
+    flex-shrink: 0;
 }
 
 @media (min-width: 640px) {
     #left-column {
+        flex-direction: column;
+        align-items: flex-start;
         width: auto;
+        gap: 1rem;
     }
 }
 
@@ -92,38 +128,50 @@ body {
 #title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    gap: 0.35rem;
 }
 
 #title .icon-gamepad {
     color: var(--color-cyan);
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
+}
+
+@media (min-width: 640px) {
+    #title .icon-gamepad {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 #title h1 {
     font-family: var(--font-digital);
-    font-size: 1.875rem;
+    font-size: 1.25rem;
     font-weight: 700;
     background: linear-gradient(to right, var(--color-cyan), var(--color-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     letter-spacing: -0.05em;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    #title h1 {
+        font-size: 1.875rem;
+    }
 }
 
 /* Game Stats */
 .game-stats {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 0.5rem;
-    width: 100%;
 }
 
 @media (min-width: 640px) {
     .game-stats {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        width: 100%;
     }
 }
 
@@ -133,7 +181,7 @@ body {
 
 @media (min-width: 640px) {
     #game-stats-desktop {
-        display: grid;
+        display: flex;
     }
 
     #game-stats-mobile {
@@ -142,32 +190,48 @@ body {
 }
 
 .stat-box {
-    background: rgba(30, 41, 59, 0.5);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
+    background: rgba(30, 41, 59, 0.7);
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.4rem;
     border: 1px solid var(--color-border);
-}
-
-.stat-box.full-width {
-    grid-column: span 2;
+    text-align: center;
+    min-width: 50px;
 }
 
 @media (min-width: 640px) {
-    .stat-box.full-width {
-        grid-column: span 1;
+    .stat-box {
+        padding: 0.75rem;
+        min-width: auto;
     }
 }
 
+.stat-box.full-width {
+    /* 移动端不需要 full-width */
+}
+
 .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.6rem;
     color: var(--color-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
+}
+
+@media (min-width: 640px) {
+    .stat-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+    }
 }
 
 .stat-value {
     font-family: var(--font-digital);
-    font-size: 1.5rem;
+    font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+    .stat-value {
+        font-size: 1.5rem;
+    }
 }
 
 .stat-value.cyan {
@@ -186,27 +250,21 @@ body {
 #board-wrapper {
     position: relative;
     align-self: center;
+    flex-shrink: 0;
 }
 
-/* Game Board */
+/* Game Board - 动态大小 */
 #game-board {
     display: grid;
     grid-template-columns: repeat(10, var(--cell-size));
     grid-template-rows: repeat(20, var(--cell-size));
     gap: var(--board-gap);
-    background: rgba(2, 6, 23, 0.5);
-    padding: 0.5rem;
+    background: rgba(2, 6, 23, 0.7);
+    padding: var(--board-padding);
     border-radius: 0.5rem;
     border: 2px solid var(--color-border);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-}
-
-@media (min-width: 640px) {
-    #game-board {
-        grid-template-columns: repeat(10, var(--cell-size-sm));
-        grid-template-rows: repeat(20, var(--cell-size-sm));
-    }
 }
 
 /* Cells */
@@ -236,43 +294,43 @@ body {
 /* Tetromino Colors */
 .cell.I {
     background: var(--color-cyan);
-    box-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
     border-color: #a5f3fc;
 }
 
 .cell.J {
     background: var(--color-blue);
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
     border-color: #93c5fd;
 }
 
 .cell.L {
     background: var(--color-orange);
-    box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.8);
     border-color: #fdba74;
 }
 
 .cell.O {
     background: var(--color-yellow);
-    box-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
     border-color: #fef08a;
 }
 
 .cell.S {
     background: var(--color-green);
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
     border-color: #86efac;
 }
 
 .cell.T {
     background: var(--color-purple);
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
     border-color: #d8b4fe;
 }
 
 .cell.Z {
     background: var(--color-red);
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
     border-color: #fca5a5;
 }
 
@@ -295,62 +353,89 @@ body {
 
 #overlay-content {
     text-align: center;
-    padding: 1.5rem;
+    padding: 1.25rem;
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 #overlay-title {
     font-family: var(--font-digital);
-    font-size: 2.25rem;
+    font-size: 1.5rem;
     color: var(--color-cyan);
     margin-bottom: 0.5rem;
     text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-#overlay-score {
-    color: var(--color-text-muted);
+@media (min-width: 640px) {
+    #overlay-title {
+        font-size: 2.25rem;
+    }
 }
 
-/* Right Column */
+#overlay-score {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* Right Column - 移动端显示在底部 */
 #right-column {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.75rem;
     width: 100%;
-    max-width: 300px;
+    flex: 1;
+    min-height: 0;
 }
 
 @media (min-width: 640px) {
     #right-column {
+        flex-direction: column;
         width: 12rem;
+        gap: 1rem;
     }
 }
 
 /* Next Piece */
 #next-piece-container {
-    background: rgba(30, 41, 59, 0.5);
-    padding: 1rem;
+    background: rgba(30, 41, 59, 0.7);
+    padding: 0.75rem;
     border-radius: 0.5rem;
     border: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1;
-    width: 100%;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    #next-piece-container {
+        padding: 1rem;
+        aspect-ratio: 1;
+        width: 100%;
+        min-width: auto;
+    }
 }
 
 .next-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--color-text-muted);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+@media (min-width: 640px) {
+    .next-label {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
 }
 
 #next-piece {
@@ -359,24 +444,39 @@ body {
 }
 
 #next-piece .cell {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
+}
+
+@media (min-width: 640px) {
+    #next-piece .cell {
+        width: 20px;
+        height: 20px;
+    }
 }
 
 /* AI Section */
 #ai-section {
     background: rgba(30, 41, 59, 0.8);
     border: 1px solid rgba(168, 85, 247, 0.3);
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
     animation: fadeIn 0.3s ease;
+    display: none;
+}
+
+@media (min-width: 640px) {
+    #ai-section {
+        display: block;
+        padding: 1rem;
+    }
 }
 
 #ai-section.hidden {
-    display: none;
+    display: none !important;
 }
 
 #ai-section::before {
@@ -442,42 +542,69 @@ body {
     }
 }
 
-/* Controls */
+/* Controls - 移动端横向布局 */
 #controls {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    max-width: 300px;
-    margin-top: 1rem;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
     user-select: none;
+}
+
+@media (min-width: 640px) {
+    #controls {
+        width: 100%;
+        max-width: 300px;
+        margin-top: 1rem;
+        gap: 1rem;
+    }
 }
 
 /* Action Buttons */
 #action-buttons {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    #action-buttons {
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
 }
 
 .action-btn {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     color: var(--color-text-muted);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.15s ease;
     font-family: var(--font-main);
 }
 
+@media (min-width: 640px) {
+    .action-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        gap: 0.5rem;
+    }
+}
+
 .action-btn:hover {
     background: var(--color-border);
+}
+
+.action-btn:active {
+    background: var(--color-cyan);
+    color: var(--color-bg);
 }
 
 .action-btn:disabled {
@@ -485,15 +612,29 @@ body {
     cursor: not-allowed;
 }
 
+.action-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+@media (min-width: 640px) {
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
 .action-btn svg.hidden {
     display: none;
 }
 
-/* D-Pad */
+/* D-Pad - 移动端专用 */
 #dpad {
-    display: grid;
-    grid-template-rows: repeat(3, auto);
-    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    justify-content: center;
 }
 
 @media (min-width: 640px) {
@@ -503,44 +644,62 @@ body {
 }
 
 .dpad-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.35rem;
 }
 
 .dpad-spacer {
-    /* Empty spacer */
+    width: 52px;
+    height: 52px;
 }
 
 .dpad-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(51, 65, 85, 0.8);
-    padding: 1rem;
+    background: rgba(51, 65, 85, 0.9);
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     color: white;
     cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-btn svg {
+    width: 22px;
+    height: 22px;
+    pointer-events: none;
 }
 
 .dpad-btn:active {
-    background: rgba(6, 182, 212, 0.8);
+    background: rgba(6, 182, 212, 0.9);
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.4);
 }
 
 .dpad-btn.action {
-    background: rgba(6, 182, 212, 0.8);
-    padding: 1.25rem;
-    box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(59, 130, 246, 0.9));
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.dpad-btn.action svg {
+    width: 26px;
+    height: 26px;
 }
 
 .dpad-btn.action:active {
-    background: rgba(6, 182, 212, 1);
+    background: linear-gradient(135deg, rgba(6, 182, 212, 1), rgba(59, 130, 246, 1));
+    transform: scale(0.92);
 }
 
 /* PC Instructions */
@@ -565,4 +724,75 @@ body {
 /* Utility */
 .hidden {
     display: none !important;
+}
+
+/* ========================================
+   移动端横屏适配
+   ======================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+    #layout {
+        flex-direction: row;
+        gap: 1rem;
+    }
+
+    #left-column {
+        flex-direction: column;
+        width: auto;
+        align-items: flex-start;
+    }
+
+    #right-column {
+        flex-direction: column;
+        width: auto;
+    }
+
+    :root {
+        --cell-size: min(3.5vh, 20px);
+    }
+
+    .dpad-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .dpad-spacer {
+        width: 44px;
+        height: 44px;
+    }
+
+    .dpad-btn.action {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* 超小屏幕适配 (iPhone SE 等) */
+@media (max-width: 375px) {
+    :root {
+        --cell-size: 6.5vw;
+    }
+
+    .dpad-btn {
+        width: 46px;
+        height: 46px;
+    }
+
+    .dpad-spacer {
+        width: 46px;
+        height: 46px;
+    }
+
+    .dpad-btn.action {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* 安全区域适配 (iPhone X 等刘海屏) */
+@supports (padding: env(safe-area-inset-bottom)) {
+    #game-container {
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+        padding-left: calc(0.5rem + env(safe-area-inset-left));
+        padding-right: calc(0.5rem + env(safe-area-inset-right));
+    }
 }
