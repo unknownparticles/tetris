@@ -1,5 +1,5 @@
 /* ========================================
-   alun的方块 - 样式表 (移动端优化版)
+   alun的方块 - 样式表 (移动端左右布局版)
    ======================================== */
 
 /* CSS Variables */
@@ -23,16 +23,17 @@
     --font-digital: 'Orbitron', sans-serif;
     --font-main: 'Noto Sans SC', sans-serif;
 
-    /* 动态格子大小 - 默认移动端 */
-    --cell-size: min(7vw, 25px);
+    /* 动态格子大小 - 移动端基于屏幕高度 */
+    --cell-size: min(4vh, 6vw, 22px);
     --board-gap: 1px;
-    --board-padding: 6px;
+    --board-padding: 4px;
 }
 
 /* 桌面端格子大小 */
 @media (min-width: 640px) {
     :root {
         --cell-size: 28px;
+        --board-padding: 8px;
     }
 }
 
@@ -66,9 +67,10 @@ body {
 
 /* Container */
 #game-container {
-    padding: 0.5rem;
+    padding: 8px;
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
     max-width: 900px;
     display: flex;
     align-items: center;
@@ -78,49 +80,50 @@ body {
 @media (min-width: 640px) {
     #game-container {
         padding: 1rem;
+        height: auto;
     }
 }
 
+/* ========================================
+   移动端：左右布局
+   左边：游戏板
+   右边：分数 | Next | 控制按钮
+   ======================================== */
+
 #layout {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
+    height: 100%;
     max-height: 100vh;
     max-height: 100dvh;
 }
 
 @media (min-width: 640px) {
     #layout {
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: center;
         gap: 1.5rem;
+        height: auto;
+        max-height: none;
+        align-items: flex-start;
     }
 }
 
 /* ========================================
-   移动端布局：标题+分数 | 游戏板 | 下一个+控制
+   Left Column - 移动端隐藏（桌面端显示标题和分数）
    ======================================== */
-
-/* Left Column - 移动端显示在顶部 */
 #left-column {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    width: 100%;
-    flex-shrink: 0;
+    display: none;
 }
 
 @media (min-width: 640px) {
     #left-column {
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        width: auto;
         gap: 1rem;
+        width: auto;
     }
 }
 
@@ -128,53 +131,28 @@ body {
 #title {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 #title .icon-gamepad {
     color: var(--color-cyan);
-    width: 24px;
-    height: 24px;
-}
-
-@media (min-width: 640px) {
-    #title .icon-gamepad {
-        width: 32px;
-        height: 32px;
-    }
+    width: 32px;
+    height: 32px;
 }
 
 #title h1 {
     font-family: var(--font-digital);
-    font-size: 1.25rem;
+    font-size: 1.875rem;
     font-weight: 700;
     background: linear-gradient(to right, var(--color-cyan), var(--color-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     letter-spacing: -0.05em;
-    white-space: nowrap;
 }
 
-@media (min-width: 640px) {
-    #title h1 {
-        font-size: 1.875rem;
-    }
-}
-
-/* Game Stats */
-.game-stats {
-    display: flex;
-    gap: 0.5rem;
-}
-
-@media (min-width: 640px) {
-    .game-stats {
-        flex-direction: column;
-        width: 100%;
-    }
-}
-
+/* Game Stats - Desktop */
 #game-stats-desktop {
     display: none;
 }
@@ -182,31 +160,23 @@ body {
 @media (min-width: 640px) {
     #game-stats-desktop {
         display: flex;
-    }
-
-    #game-stats-mobile {
-        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
 
 .stat-box {
     background: rgba(30, 41, 59, 0.7);
-    padding: 0.4rem 0.6rem;
+    padding: 0.5rem 0.6rem;
     border-radius: 0.4rem;
     border: 1px solid var(--color-border);
     text-align: center;
-    min-width: 50px;
 }
 
 @media (min-width: 640px) {
     .stat-box {
         padding: 0.75rem;
-        min-width: auto;
     }
-}
-
-.stat-box.full-width {
-    /* 移动端不需要 full-width */
 }
 
 .stat-label {
@@ -225,7 +195,7 @@ body {
 
 .stat-value {
     font-family: var(--font-digital);
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 @media (min-width: 640px) {
@@ -246,14 +216,17 @@ body {
     color: var(--color-green);
 }
 
-/* Board Wrapper */
+/* ========================================
+   Center - Game Board (移动端在左侧)
+   ======================================== */
 #board-wrapper {
     position: relative;
-    align-self: center;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Game Board - 动态大小 */
 #game-board {
     display: grid;
     grid-template-columns: repeat(10, var(--cell-size));
@@ -294,43 +267,43 @@ body {
 /* Tetromino Colors */
 .cell.I {
     background: var(--color-cyan);
-    box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
+    box-shadow: 0 0 6px rgba(34, 211, 238, 0.8);
     border-color: #a5f3fc;
 }
 
 .cell.J {
     background: var(--color-blue);
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
     border-color: #93c5fd;
 }
 
 .cell.L {
     background: var(--color-orange);
-    box-shadow: 0 0 8px rgba(249, 115, 22, 0.8);
+    box-shadow: 0 0 6px rgba(249, 115, 22, 0.8);
     border-color: #fdba74;
 }
 
 .cell.O {
     background: var(--color-yellow);
-    box-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
+    box-shadow: 0 0 6px rgba(250, 204, 21, 0.8);
     border-color: #fef08a;
 }
 
 .cell.S {
     background: var(--color-green);
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
     border-color: #86efac;
 }
 
 .cell.T {
     background: var(--color-purple);
-    box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+    box-shadow: 0 0 6px rgba(168, 85, 247, 0.8);
     border-color: #d8b4fe;
 }
 
 .cell.Z {
     background: var(--color-red);
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
     border-color: #fca5a5;
 }
 
@@ -353,17 +326,16 @@ body {
 
 #overlay-content {
     text-align: center;
-    padding: 1.25rem;
+    padding: 1rem;
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transform: scale(1.05);
 }
 
 #overlay-title {
     font-family: var(--font-digital);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: var(--color-cyan);
     margin-bottom: 0.5rem;
     text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -377,39 +349,73 @@ body {
 
 #overlay-score {
     color: var(--color-text-muted);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
 }
 
-/* Right Column - 移动端显示在底部 */
+@media (min-width: 640px) {
+    #overlay-score {
+        font-size: 1rem;
+    }
+}
+
+/* ========================================
+   Right Column - 移动端纵向布局：分数 | Next | 控制
+   ======================================== */
 #right-column {
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    gap: 0.75rem;
-    width: 100%;
+    flex-direction: column;
+    gap: 6px;
     flex: 1;
-    min-height: 0;
+    min-width: 0;
+    max-width: 140px;
+    height: 100%;
+    justify-content: space-between;
 }
 
 @media (min-width: 640px) {
     #right-column {
-        flex-direction: column;
         width: 12rem;
+        max-width: none;
         gap: 1rem;
+        height: auto;
+        justify-content: flex-start;
     }
 }
 
-/* Next Piece */
+/* Mobile Stats - 右上区域 */
+#game-stats-mobile {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+@media (min-width: 640px) {
+    #game-stats-mobile {
+        display: none;
+    }
+}
+
+#game-stats-mobile .stat-box {
+    flex: 1;
+    min-width: 40px;
+    padding: 0.35rem 0.4rem;
+}
+
+#game-stats-mobile .stat-box.full-width {
+    flex-basis: 100%;
+}
+
+/* Next Piece - 右中区域 */
 #next-piece-container {
     background: rgba(30, 41, 59, 0.7);
-    padding: 0.75rem;
+    padding: 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 80px;
     flex-shrink: 0;
 }
 
@@ -418,17 +424,16 @@ body {
         padding: 1rem;
         aspect-ratio: 1;
         width: 100%;
-        min-width: auto;
     }
 }
 
 .next-label {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     color: var(--color-text-muted);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
 }
 
 @media (min-width: 640px) {
@@ -444,8 +449,8 @@ body {
 }
 
 #next-piece .cell {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
 }
 
 @media (min-width: 640px) {
@@ -455,23 +460,22 @@ body {
     }
 }
 
-/* AI Section */
+/* AI Section - 移动端隐藏 */
 #ai-section {
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.3s ease;
     display: none;
 }
 
 @media (min-width: 640px) {
     #ai-section {
         display: block;
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(168, 85, 247, 0.3);
         padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 0.3s ease;
     }
 }
 
@@ -542,13 +546,15 @@ body {
     }
 }
 
-/* Controls - 移动端横向布局 */
+/* ========================================
+   Controls - 右下区域
+   ======================================== */
 #controls {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 4px;
     flex: 1;
-    min-width: 0;
+    min-height: 0;
     user-select: none;
 }
 
@@ -556,8 +562,9 @@ body {
     #controls {
         width: 100%;
         max-width: 300px;
-        margin-top: 1rem;
+        margin-top: 0.5rem;
         gap: 1rem;
+        flex: none;
     }
 }
 
@@ -565,7 +572,8 @@ body {
 #action-buttons {
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 @media (min-width: 640px) {
@@ -578,13 +586,13 @@ body {
 .action-btn {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
+    gap: 0.25rem;
+    padding: 0.3rem 0.5rem;
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
+    border-radius: 0.4rem;
     color: var(--color-text-muted);
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     cursor: pointer;
     transition: all 0.15s ease;
     font-family: var(--font-main);
@@ -595,6 +603,7 @@ body {
         padding: 0.5rem 1rem;
         font-size: 0.875rem;
         gap: 0.5rem;
+        border-radius: 0.5rem;
     }
 }
 
@@ -613,8 +622,8 @@ body {
 }
 
 .action-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 
 @media (min-width: 640px) {
@@ -628,13 +637,14 @@ body {
     display: none;
 }
 
-/* D-Pad - 移动端专用 */
+/* D-Pad - 移动端控制按钮 */
 #dpad {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 3px;
     flex: 1;
     justify-content: center;
+    align-items: center;
 }
 
 @media (min-width: 640px) {
@@ -646,12 +656,12 @@ body {
 .dpad-row {
     display: flex;
     justify-content: center;
-    gap: 0.35rem;
+    gap: 3px;
 }
 
 .dpad-spacer {
-    width: 52px;
-    height: 52px;
+    width: 40px;
+    height: 40px;
 }
 
 .dpad-btn {
@@ -659,8 +669,8 @@ body {
     align-items: center;
     justify-content: center;
     background: rgba(51, 65, 85, 0.9);
-    width: 52px;
-    height: 52px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.15);
     color: white;
@@ -673,8 +683,8 @@ body {
 }
 
 .dpad-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     pointer-events: none;
 }
 
@@ -686,15 +696,15 @@ body {
 
 .dpad-btn.action {
     background: linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(59, 130, 246, 0.9));
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
     box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.25);
 }
 
 .dpad-btn.action svg {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
 }
 
 .dpad-btn.action:active {
@@ -727,72 +737,87 @@ body {
 }
 
 /* ========================================
-   移动端横屏适配
+   小屏幕适配 (iPhone SE 等)
    ======================================== */
-@media (max-height: 500px) and (orientation: landscape) {
-    #layout {
-        flex-direction: row;
-        gap: 1rem;
-    }
-
-    #left-column {
-        flex-direction: column;
-        width: auto;
-        align-items: flex-start;
-    }
-
-    #right-column {
-        flex-direction: column;
-        width: auto;
-    }
-
+@media (max-width: 375px) {
     :root {
-        --cell-size: min(3.5vh, 20px);
+        --cell-size: min(3.8vh, 5.5vw, 20px);
     }
 
     .dpad-btn {
-        width: 44px;
-        height: 44px;
+        width: 36px;
+        height: 36px;
     }
 
     .dpad-spacer {
-        width: 44px;
-        height: 44px;
+        width: 36px;
+        height: 36px;
     }
 
     .dpad-btn.action {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .dpad-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .dpad-btn.action svg {
+        width: 20px;
+        height: 20px;
     }
 }
 
-/* 超小屏幕适配 (iPhone SE 等) */
-@media (max-width: 375px) {
+/* 超小屏幕高度适配 */
+@media (max-height: 600px) {
     :root {
-        --cell-size: 6.5vw;
+        --cell-size: min(3.5vh, 5vw, 18px);
     }
 
     .dpad-btn {
-        width: 46px;
-        height: 46px;
+        width: 34px;
+        height: 34px;
     }
 
     .dpad-spacer {
-        width: 46px;
-        height: 46px;
+        width: 34px;
+        height: 34px;
     }
 
     .dpad-btn.action {
-        width: 50px;
-        height: 50px;
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* 横屏模式 */
+@media (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --cell-size: min(4vh, 3vw, 22px);
+    }
+
+    #right-column {
+        max-width: 160px;
+    }
+
+    .dpad-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .dpad-spacer {
+        width: 38px;
+        height: 38px;
     }
 }
 
 /* 安全区域适配 (iPhone X 等刘海屏) */
 @supports (padding: env(safe-area-inset-bottom)) {
     #game-container {
-        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
-        padding-left: calc(0.5rem + env(safe-area-inset-left));
-        padding-right: calc(0.5rem + env(safe-area-inset-right));
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        padding-left: calc(8px + env(safe-area-inset-left));
+        padding-right: calc(8px + env(safe-area-inset-right));
     }
 }
