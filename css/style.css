@@ -86,7 +86,7 @@ body {
 
 /* ========================================
    移动端：左右布局
-   左边：游戏板
+   左边：标题 + 游戏板
    右边：分数 | Next | 控制按钮
    ======================================== */
 
@@ -112,7 +112,61 @@ body {
 }
 
 /* ========================================
-   Left Column - 移动端隐藏（桌面端显示标题和分数）
+   Game Section - 左侧区域（标题 + 游戏板）
+   ======================================== */
+#game-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    #game-section {
+        gap: 0;
+    }
+}
+
+/* Mobile Title - 移动端显示的标题 */
+#mobile-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: rgba(30, 41, 59, 0.7);
+    border-radius: 0.4rem;
+    border: 1px solid var(--color-border);
+    width: 100%;
+}
+
+#mobile-title .icon-gamepad {
+    color: var(--color-cyan);
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+#mobile-title span {
+    font-family: var(--font-digital);
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: linear-gradient(to right, var(--color-cyan), var(--color-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    #mobile-title {
+        display: none;
+    }
+}
+
+/* ========================================
+   Left Column - 桌面端显示标题和分数
    ======================================== */
 #left-column {
     display: none;
@@ -365,11 +419,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    flex: 1;
     min-width: 0;
     max-width: 140px;
-    height: 100%;
-    justify-content: space-between;
+    align-self: flex-start;
+    justify-content: flex-start;
 }
 
 @media (min-width: 640px) {
@@ -377,7 +430,7 @@ body {
         width: 12rem;
         max-width: none;
         gap: 1rem;
-        height: auto;
+        align-self: flex-start;
         justify-content: flex-start;
     }
 }
